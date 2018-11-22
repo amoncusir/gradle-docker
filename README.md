@@ -44,3 +44,24 @@ task makeUserCredentials(type: Shell) {
 ```
 
 And run gradle command: `$ ./gradlew --rerun-tasks makeUserCredentials dockerClean dockerPrepare dockerBuild awsDockerTag awsDockerPush dockerRemoveBuilds`
+
+## Add in you project
+
+```groovy
+buildscript {
+    ...
+    
+    repositories {
+        ...
+        
+        // Bintray public repository
+        maven { url "https://dl.bintray.com/amoncusir/gradle-utils" }
+    }
+    
+    dependencies {
+        // Add tasks in your classpath
+        classpath('info.digitalpoet.gradle:shell:0.0.1')
+        classpath('info.digitalpoet.gradle:docker:0.0.1')
+    }
+}
+```
