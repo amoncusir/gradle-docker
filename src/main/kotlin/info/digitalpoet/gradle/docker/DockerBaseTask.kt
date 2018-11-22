@@ -39,6 +39,7 @@ open class DockerBaseTask: DefaultTask()
 
     protected fun bash(vararg args: String): Command = bash(args.asList())
 
+    @Suppress("ExceptionRaisedInUnexpectedLocation")
     protected operator fun Command.invoke(error: CommandResult.() -> String)
     {
         val result = this(redirect = listOf(System.out))
