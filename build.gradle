@@ -1,0 +1,115 @@
+plugins {
+    
+    //Kotlin
+    id "org.jetbrains.kotlin.jvm" version "1.3.10"
+
+    // Quality check
+    id "io.gitlab.arturbosch.detekt" version "1.0.0-RC11"
+
+    // Publishers
+    id("com.jfrog.bintray") version "1.8.4"
+    id 'maven-publish'
+}
+
+group = "info.digitalpoet.gradle"
+version = "1.0.0"
+def release_type = "Final"
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            
+            groupId = rootProject.group
+            artifactId = rootProject.name
+            version = rootProject.version
+            
+            artifact(sourcesJar) {
+                classifier "src"
+                extension "zip"
+            }
+            
+            pom {
+                name = "Gradle Docker"
+                description = "A gradle tasks for run docker commands in linux environments"
+                url = "https://github.com/amoncusir/gradle-docker"
+                
+                licenses {
+                    license {
+                        name = "GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007"
+                        url = "https://www.gnu.org/licenses/gpl-3.0.en.html"
+                    }
+                }
+                
+                developers {
+                    developer {
+                        id = "amoncusir"
+                        name = "Aran Moncusí"
+                        email = "amoncusir@gmail.com"
+                    }
+                }
+                
+                scm {
+                    connection = "scm:git:https://github.com/amoncusir/gradle-docker.git"
+                    url = "https://github.com/amoncusir/gradle-docker"
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.getenv("BINTRAY_USER")
+    key = System.getenv("BINTRAY_KEY")
+
+    publish = true
+    
+    publications = ['maven']
+
+    pkg {
+        repo = "info.digitalpoet.gradle"
+        name = "docker"
+
+        publicDownloadNumbers = true
+
+        licenses = ["AGPL-V3"]
+        labels = ["gradle", "docker", "linux", "kotlin"]
+
+        vcsUrl = "https://github.com/amoncusir/gradle-docker.git"
+        githubRepo = "amoncusir/gradle-docker"
+        githubReleaseNotesFile = "README.md"
+        
+        version {
+            name = "${rootProject.version}-${release_type}"
+            vcsTag = rootProject.version
+            desc = "First stable version"
+        }
+    }
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+    
+    maven { url "https://dl.bintray.com/amoncusir/gradle-utils" }
+}
+
+dependencies {
+    
+    // Gradle API
+    implementation gradleApi()
+    
+    // Kotlin Dependencies
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
+
+    compile 'info.digitalpoet.gradle:shell:0.0.1'
+}
+
+detekt {
+    parallel = true
+    config = files("${project.rootProject.projectDir.absolutePath}/detekt-config.yml")
+}
+
+task sourcesJar(type: Jar) {
+    classifier "sources"
+}
